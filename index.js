@@ -7,6 +7,8 @@ const STAR_NUMBERS_TOTAL = 12;
 const STAR_NUMBERS_PICK = 2;
 const MAX_ATTEMPTS = 150000000; // ~150M for reasonable jackpot chance
 const TICKET_PRICE = 2.5;
+const TYPICAL_TICKETS_PER_DRAW = 116000000; // Typical EuroMillions tickets sold per draw
+const JACKPOT_ODDS = 139838160; // 1 in 139,838,160 odds of winning jackpot
 const UI_UPDATE_INTERVAL = 10000; // Update UI every 10k draws (once per chunk)
 const HEATMAP_UPDATE_THRESHOLD = 100000; // Update heatmap every 100k draws
 const MINIMAL_UPDATE_INTERVAL = 3000; // Update matches/financials every 3 seconds
@@ -1435,9 +1437,9 @@ element.innerHTML = `
   <div class="lotto-container">
     <div class="header">
       <h1>💰 Lottery Financial Simulator</h1>
-      <div class="subtitle">Track your returns, profits, and losses in real-time • Jackpot: £${PAYOUT_DATA[
+      <div class="subtitle">Track your returns, profits, and losses in real-time • Max Jackpot: £${PAYOUT_DATA[
 				"5+2"
-			].prize.toLocaleString()}</div>
+			].prize.toLocaleString()} (shared among winners)</div>
       <div class="financial-summary">
         <div class="financial-item">
           <div class="financial-value" id="totalSpent">£0.00</div>
@@ -2695,12 +2697,19 @@ function startSimulation() {
 					);
 					currentPrize = 0;
 
-					if (matchType) {
-						matches[matchType]++;
+				if (matchType) {
+					matches[matchType]++;
+					
+					// Calculate prize (with jackpot sharing for 5+2)
+					if (matchType === "5+2") {
+						// Calculate expected number of jackpot winners per draw
+						const expectedWinners = Math.max(1, TYPICAL_TICKETS_PER_DRAW / JACKPOT_ODDS);
+						currentPrize = PAYOUT_DATA[matchType].prize / expectedWinners;
+					} else {
 						currentPrize = PAYOUT_DATA[matchType].prize;
-						financials.totalWon += currentPrize;
-
-						// Check for jackpot - immediate update
+					}
+					
+					financials.totalWon += currentPrize;						// Check for jackpot - immediate update
 						if (matchType === "5+2") {
 							updateBallsDisplay("currentMainBalls", drawnBallsMain, "main");
 							updateBallsDisplay("currentStarBalls", drawnBallsStar, "star");
