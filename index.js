@@ -850,6 +850,51 @@ const styles = `
     padding: 25px;
     margin-bottom: 30px;
     border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .progress-section.sticky {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    border-radius: 15px 15px 0 0;
+    z-index: 1000;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .sticky-toggle-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .sticky-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+  }
+
+  .sticky-toggle-btn.active {
+    background: rgba(74, 144, 226, 0.3);
+    color: #4a90e2;
+    border-color: rgba(74, 144, 226, 0.5);
   }
 
   .progress-stats {
@@ -1578,7 +1623,8 @@ element.innerHTML = `
       </div>
     </div>
 
-    <div class="progress-section">
+    <div class="progress-section" id="progressSection">
+      <button class="sticky-toggle-btn" id="stickyToggleBtn" title="Pin to bottom">📌</button>
       <div class="section-title">Simulation Progress</div>
       <div class="progress-stats">
         <div class="stat-item">
@@ -2235,27 +2281,41 @@ function updateHeatmapStats() {
 	// Display hottest numbers as percentage difference from expected
 	// Expected frequency accounts for picking multiple numbers per draw
 	const hotMainExpected = (totalDraws * MAIN_NUMBERS_PICK) / MAIN_NUMBERS_TOTAL;
-	const hotMainDiff = ((sortedMainHot[0].freq - hotMainExpected) / hotMainExpected) * 100;
+	const hotMainDiff =
+		((sortedMainHot[0].freq - hotMainExpected) / hotMainExpected) * 100;
 	document.getElementById("hotMainBall").textContent = sortedMainHot[0].number;
-	document.getElementById("hotMainPercentage").textContent = 
-		hotMainDiff >= 0 ? `+${hotMainDiff.toFixed(1)}%` : `${hotMainDiff.toFixed(1)}%`;
+	document.getElementById("hotMainPercentage").textContent =
+		hotMainDiff >= 0
+			? `+${hotMainDiff.toFixed(1)}%`
+			: `${hotMainDiff.toFixed(1)}%`;
 
 	const hotStarExpected = (totalDraws * STAR_NUMBERS_PICK) / STAR_NUMBERS_TOTAL;
-	const hotStarDiff = ((sortedStarHot[0].freq - hotStarExpected) / hotStarExpected) * 100;
+	const hotStarDiff =
+		((sortedStarHot[0].freq - hotStarExpected) / hotStarExpected) * 100;
 	document.getElementById("hotStarBall").textContent = sortedStarHot[0].number;
-	document.getElementById("hotStarPercentage").textContent = 
-		hotStarDiff >= 0 ? `+${hotStarDiff.toFixed(1)}%` : `${hotStarDiff.toFixed(1)}%`;
+	document.getElementById("hotStarPercentage").textContent =
+		hotStarDiff >= 0
+			? `+${hotStarDiff.toFixed(1)}%`
+			: `${hotStarDiff.toFixed(1)}%`;
 
 	// Display coldest numbers as percentage difference from expected
-	const coldMainDiff = ((sortedMainCold[0].freq - hotMainExpected) / hotMainExpected) * 100;
-	document.getElementById("coldMainBall").textContent = sortedMainCold[0].number;
-	document.getElementById("coldMainPercentage").textContent = 
-		coldMainDiff >= 0 ? `+${coldMainDiff.toFixed(1)}%` : `${coldMainDiff.toFixed(1)}%`;
+	const coldMainDiff =
+		((sortedMainCold[0].freq - hotMainExpected) / hotMainExpected) * 100;
+	document.getElementById("coldMainBall").textContent =
+		sortedMainCold[0].number;
+	document.getElementById("coldMainPercentage").textContent =
+		coldMainDiff >= 0
+			? `+${coldMainDiff.toFixed(1)}%`
+			: `${coldMainDiff.toFixed(1)}%`;
 
-	const coldStarDiff = ((sortedStarCold[0].freq - hotStarExpected) / hotStarExpected) * 100;
-	document.getElementById("coldStarBall").textContent = sortedStarCold[0].number;
-	document.getElementById("coldStarPercentage").textContent = 
-		coldStarDiff >= 0 ? `+${coldStarDiff.toFixed(1)}%` : `${coldStarDiff.toFixed(1)}%`;
+	const coldStarDiff =
+		((sortedStarCold[0].freq - hotStarExpected) / hotStarExpected) * 100;
+	document.getElementById("coldStarBall").textContent =
+		sortedStarCold[0].number;
+	document.getElementById("coldStarPercentage").textContent =
+		coldStarDiff >= 0
+			? `+${coldStarDiff.toFixed(1)}%`
+			: `${coldStarDiff.toFixed(1)}%`;
 }
 
 function updateFrequencyData(drawnMain, drawnStar) {
@@ -2694,19 +2754,24 @@ function startSimulation() {
 					if (matchType) {
 						matches[matchType]++;
 
-						// Calculate prize (with jackpot sharing for 5+2)
+						// Calculate prize (with jackpot sharing for all 5+2 winners across entire simulation)
 						if (matchType === "5+2") {
-							// Calculate expected number of jackpot winners per draw
-							const expectedWinners = Math.max(
-								1,
-								TYPICAL_TICKETS_PER_DRAW / JACKPOT_ODDS
-							);
-							currentPrize = PAYOUT_DATA[matchType].prize / expectedWinners;
+							const jackpotWinners = matches["5+2"];
+							const totalJackpot = PAYOUT_DATA["5+2"].prize;
+							const sharedAmount = totalJackpot / jackpotWinners;
+
+							// Adjust total won: remove old total jackpot amount, add new shared total
+							// Old total = (jackpotWinners - 1) * totalJackpot (before this win)
+							// New total = jackpotWinners * sharedAmount (after this win)
+							const oldJackpotTotal = (jackpotWinners - 1) * totalJackpot;
+							const newJackpotTotal = jackpotWinners * sharedAmount;
+							financials.totalWon =
+								financials.totalWon - oldJackpotTotal + newJackpotTotal;
+							currentPrize = sharedAmount;
 						} else {
 							currentPrize = PAYOUT_DATA[matchType].prize;
-						}
-
-						financials.totalWon += currentPrize; // Check for jackpot - immediate update
+							financials.totalWon += currentPrize;
+						} // Check for jackpot - immediate update
 						if (matchType === "5+2") {
 							updateBallsDisplay("currentMainBalls", drawnBallsMain, "main");
 							updateBallsDisplay("currentStarBalls", drawnBallsStar, "star");
@@ -2971,6 +3036,31 @@ document.getElementById("testJackpotBtn").addEventListener("click", () => {
 			: [3, 9];
 
 	showJackpotAnimation(123456, testMainNumbers, testStarNumbers);
+});
+
+// Sticky toggle functionality
+const progressSection = document.getElementById("progressSection");
+const stickyToggleBtn = document.getElementById("stickyToggleBtn");
+
+// Load saved state from localStorage
+const isSticky = localStorage.getItem("progressSectionSticky") === "true";
+if (isSticky) {
+	progressSection.classList.add("sticky");
+	stickyToggleBtn.classList.add("active");
+	stickyToggleBtn.title = "Unpin from bottom";
+}
+
+stickyToggleBtn.addEventListener("click", () => {
+	const isCurrentlySticky = progressSection.classList.toggle("sticky");
+	stickyToggleBtn.classList.toggle("active");
+
+	if (isCurrentlySticky) {
+		stickyToggleBtn.title = "Unpin from bottom";
+		localStorage.setItem("progressSectionSticky", "true");
+	} else {
+		stickyToggleBtn.title = "Pin to bottom";
+		localStorage.setItem("progressSectionSticky", "false");
+	}
 });
 document
 	.getElementById("quickPickMain")
