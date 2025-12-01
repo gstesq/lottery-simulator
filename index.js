@@ -2232,36 +2232,30 @@ function updateHeatmapStats() {
 	const sortedStarHot = [...starDeviations].sort((a, b) => b.freq - a.freq);
 	const sortedStarCold = [...starDeviations].sort((a, b) => a.freq - b.freq);
 
-	// Display hottest numbers as ratio (e.g., 1.05x = 5% more than expected)
+	// Display hottest numbers as percentage difference from expected
 	// Expected frequency accounts for picking multiple numbers per draw
 	const hotMainExpected = (totalDraws * MAIN_NUMBERS_PICK) / MAIN_NUMBERS_TOTAL;
-	const hotMainRatio = sortedMainHot[0].freq / hotMainExpected;
+	const hotMainDiff = ((sortedMainHot[0].freq - hotMainExpected) / hotMainExpected) * 100;
 	document.getElementById("hotMainBall").textContent = sortedMainHot[0].number;
-	document.getElementById(
-		"hotMainPercentage"
-	).textContent = `${hotMainRatio.toFixed(2)}x avg`;
+	document.getElementById("hotMainPercentage").textContent = 
+		hotMainDiff >= 0 ? `+${hotMainDiff.toFixed(1)}%` : `${hotMainDiff.toFixed(1)}%`;
 
 	const hotStarExpected = (totalDraws * STAR_NUMBERS_PICK) / STAR_NUMBERS_TOTAL;
-	const hotStarRatio = sortedStarHot[0].freq / hotStarExpected;
+	const hotStarDiff = ((sortedStarHot[0].freq - hotStarExpected) / hotStarExpected) * 100;
 	document.getElementById("hotStarBall").textContent = sortedStarHot[0].number;
-	document.getElementById(
-		"hotStarPercentage"
-	).textContent = `${hotStarRatio.toFixed(2)}x avg`;
+	document.getElementById("hotStarPercentage").textContent = 
+		hotStarDiff >= 0 ? `+${hotStarDiff.toFixed(1)}%` : `${hotStarDiff.toFixed(1)}%`;
 
-	// Display coldest numbers as ratio
-	const coldMainRatio = sortedMainCold[0].freq / hotMainExpected;
-	document.getElementById("coldMainBall").textContent =
-		sortedMainCold[0].number;
-	document.getElementById(
-		"coldMainPercentage"
-	).textContent = `${coldMainRatio.toFixed(2)}x avg`;
+	// Display coldest numbers as percentage difference from expected
+	const coldMainDiff = ((sortedMainCold[0].freq - hotMainExpected) / hotMainExpected) * 100;
+	document.getElementById("coldMainBall").textContent = sortedMainCold[0].number;
+	document.getElementById("coldMainPercentage").textContent = 
+		coldMainDiff >= 0 ? `+${coldMainDiff.toFixed(1)}%` : `${coldMainDiff.toFixed(1)}%`;
 
-	const coldStarRatio = sortedStarCold[0].freq / hotStarExpected;
-	document.getElementById("coldStarBall").textContent =
-		sortedStarCold[0].number;
-	document.getElementById(
-		"coldStarPercentage"
-	).textContent = `${coldStarRatio.toFixed(2)}x avg`;
+	const coldStarDiff = ((sortedStarCold[0].freq - hotStarExpected) / hotStarExpected) * 100;
+	document.getElementById("coldStarBall").textContent = sortedStarCold[0].number;
+	document.getElementById("coldStarPercentage").textContent = 
+		coldStarDiff >= 0 ? `+${coldStarDiff.toFixed(1)}%` : `${coldStarDiff.toFixed(1)}%`;
 }
 
 function updateFrequencyData(drawnMain, drawnStar) {
@@ -2697,19 +2691,22 @@ function startSimulation() {
 					);
 					currentPrize = 0;
 
-				if (matchType) {
-					matches[matchType]++;
-					
-					// Calculate prize (with jackpot sharing for 5+2)
-					if (matchType === "5+2") {
-						// Calculate expected number of jackpot winners per draw
-						const expectedWinners = Math.max(1, TYPICAL_TICKETS_PER_DRAW / JACKPOT_ODDS);
-						currentPrize = PAYOUT_DATA[matchType].prize / expectedWinners;
-					} else {
-						currentPrize = PAYOUT_DATA[matchType].prize;
-					}
-					
-					financials.totalWon += currentPrize;						// Check for jackpot - immediate update
+					if (matchType) {
+						matches[matchType]++;
+
+						// Calculate prize (with jackpot sharing for 5+2)
+						if (matchType === "5+2") {
+							// Calculate expected number of jackpot winners per draw
+							const expectedWinners = Math.max(
+								1,
+								TYPICAL_TICKETS_PER_DRAW / JACKPOT_ODDS
+							);
+							currentPrize = PAYOUT_DATA[matchType].prize / expectedWinners;
+						} else {
+							currentPrize = PAYOUT_DATA[matchType].prize;
+						}
+
+						financials.totalWon += currentPrize; // Check for jackpot - immediate update
 						if (matchType === "5+2") {
 							updateBallsDisplay("currentMainBalls", drawnBallsMain, "main");
 							updateBallsDisplay("currentStarBalls", drawnBallsStar, "star");
