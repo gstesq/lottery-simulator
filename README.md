@@ -1,10 +1,10 @@
 # 🎰 EuroMillions Lottery Simulator
 
-A high-performance lottery simulator that can process **160,000+ attempts per second**, capable of running up to 150 million draws to calculate realistic odds and financial outcomes.
+A high-performance lottery simulator that can process **400,000+ attempts per second**, capable of running up to 150 million draws to calculate realistic odds and financial outcomes.
 
 ## 🚀 Features
 
-- **Ultra-Fast Performance**: 160k+ attempts/second using chunked processing
+- **Ultra-Fast Performance**: 400k+ attempts/second using optimized chunked processing
 - **Real-time Statistics**: Live updates of draws, matches, and financials
 - **Interactive Number Selection**: Click to select your lucky numbers
 - **Hot/Cold Analysis**: Visual representation of frequently/rarely drawn numbers
@@ -36,7 +36,7 @@ A high-performance lottery simulator that can process **160,000+ attempts per se
 
 - **Vanilla JavaScript**: No frameworks, pure performance
 - **Chunk Processing**: 10,000 draws per chunk with setTimeout
-- **Optimized Updates**: 
+- **Optimized Updates**:
   - UI updates every 10k draws
   - Heatmap every 100k draws
   - Financials every 3 seconds
@@ -62,6 +62,7 @@ A high-performance lottery simulator that can process **160,000+ attempts per se
 ## 📱 Browser Support
 
 Works on all modern browsers:
+
 - Chrome/Edge 90+
 - Firefox 88+
 - Safari 14+
@@ -70,6 +71,7 @@ Works on all modern browsers:
 ## 🚀 Deployment
 
 Simply host the three files on any static hosting:
+
 - `index.html`
 - `index.js`
 - `styles.css`
