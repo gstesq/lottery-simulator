@@ -1,10 +1,10 @@
 # 🎰 EuroMillions Lottery Simulator
 
-A high-performance lottery simulator that can process **400,000+ attempts per second**, capable of running up to 150 million draws to calculate realistic odds and financial outcomes.
+A high-performance lottery simulator that can process **500,000+ attempts per second**, capable of running up to 150 million draws to calculate realistic odds and financial outcomes.
 
 ## 🚀 Features
 
-- **Ultra-Fast Performance**: 400k+ attempts/second using optimized chunked processing
+- **Ultra-Fast Performance**: 500k+ attempts/second using optimized chunked processing
 - **Real-time Statistics**: Live updates of draws, matches, and financials
 - **Interactive Number Selection**: Click to select your lucky numbers
 - **Hot/Cold Analysis**: Visual representation of frequently/rarely drawn numbers
