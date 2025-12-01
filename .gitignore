@@ -1,0 +1,22 @@
+# Backup files
+index_backup.js
+index_bakup_2.js
+index_bakup_3
+index_bakup_4.html
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Optional: node_modules if you add any build tools later
+node_modules/
